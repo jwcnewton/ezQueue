@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "ezqueue"
+version = "0.1.0"
+description = "Easy queue allows for fixed size array and unique keys"
+authors = ["jwcnewton"]
+license = "MIT"
+readme = "README.md"
+documentation = "https://ezqueue.readthedocs.io/en/latest/"
+homepage = "https://github.com/jwcnewton/ezqueue"
+repository = "https://github.com/jwcnewton/ezqueue"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^3.9.2"
+
+[tool.semantic_release]
+version_variable = [
+    "./src/ezqueue/__init__.py:__version__",
+    "pyproject.toml:version"
+]
+branch = "main"
+upload_to_pypi = false
+upload_to_release = true
+build_command = "pip install poetry && poetry build"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

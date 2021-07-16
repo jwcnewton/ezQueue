@@ -1,0 +1,46 @@
+name: build
+
+on:
+  # Trigger the workflow on push or pull request to main
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: [3.7]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        pip install poetry
+        pip install pytest
+        pip install pytest-cov
+        poetry install
+        poetry add -D flake8
+        poetry add -D pytest
+        poetry add -D coverage[toml]
+    - name: Check style
+      run: poetry run flake8 --exclude=docs*
+    - name: Generate coverage report
+      run: |
+        pytest --cov=./ --cov-report=xml
+    - name: Upload coverage to Codecov  
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: true

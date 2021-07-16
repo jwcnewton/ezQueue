@@ -1,0 +1,78 @@
+name: Deploy
+
+on:
+  # Trigger the workflow on push or pull request to main
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+    - name: Install dependencies
+      run: |
+        pip install poetry
+        pip install pytest
+        pip install pytest-cov
+        poetry install
+        poetry add -D flake8
+        poetry add -D pytest
+        poetry add -D coverage[toml]
+    - name: Check style
+      run: poetry run flake8 --exclude=docs*
+    - name: Generate coverage report
+      run: |
+        pytest --cov=./ --cov-report=xml
+    - name: Upload coverage to Codecov  
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: true
+    - name: Get release tag version from package version
+      run: |
+        echo ::set-output name=release_tag::$(cat ./src/ezqueue/__init__.py | grep "version" | egrep -o "([0-9]{1,}\.)+[0-9]{1,}")
+      id: release
+    - name: checkout
+      uses: actions/checkout@master
+      with:
+        ref: main
+    - name: Bump version and tagging and publish
+      run: |
+          pip install python-semantic-release --use-feature=2020-resolver
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          semantic-release publish
+    - name: Push package version changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+    - name: VERSION
+      run: |
+          echo "${{ steps.release.outputs.release_tag }}"
+    - name: Create Release with new version
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.release.outputs.release_tag }}
+        release_name: Release ${{ steps.release.outputs.release_tag }}
+        draft: false
+        prerelease: false
+    - name: Build package
+      run: |
+          poetry build
+    - name: Publish to test PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        user: __token__
+        password: ${{ secrets.TEST_PYPI_PASSWORD }}
