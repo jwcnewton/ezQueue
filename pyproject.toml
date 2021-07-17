@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ezqueue"
-version = "0.2.1"
+version = "0.2.2"
 description = "Easy queue allows for fixed size array and unique keys"
 authors = ["jwcnewton"]
 license = "MIT"
@@ -17,7 +17,7 @@ flake8 = "^3.9.2"
 
 [tool.semantic_release]
 version_variable = [
-    "./src/ezqueue/__init__.py:__version__",
+    "./src/__init__.py:__version__",
     "pyproject.toml:version"
 ]
 branch = "main"

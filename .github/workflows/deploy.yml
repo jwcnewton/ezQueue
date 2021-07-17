@@ -39,7 +39,7 @@ jobs:
         fail_ci_if_error: true
     - name: Get release tag version from package version
       run: |
-        echo ::set-output name=release_tag::$(cat ./src/ezqueue/__init__.py | grep "version" | egrep -o "([0-9]{1,}\.)+[0-9]{1,}")
+        echo ::set-output name=release_tag::$(cat ./src/__init__.py | grep "version" | egrep -o "([0-9]{1,}\.)+[0-9]{1,}")
       id: release
     - name: checkout
       uses: actions/checkout@master

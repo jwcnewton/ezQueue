@@ -1,4 +1,4 @@
-from src.ezqueue.ezqueue import ezqueue
+from src.ezqueue import ezqueue
 
 
 def test_smoke():
