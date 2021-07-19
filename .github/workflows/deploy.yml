@@ -1,10 +1,12 @@
 name: Deploy
 
-on:
-  # Trigger the workflow on push or pull request to main
-  push:
-    branches:
-      - main
+on: 
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'     
+        required: true
+        default: 'warning'
 
 jobs:
   build:

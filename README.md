@@ -16,15 +16,28 @@ $ pip install -i https://test.pypi.org/simple/ ezqueue
 
 ## Features
 
-- TODO
+- Fix queue size
+- Key, value queue
 
 ## Dependencies
 
-- TODO
+- Zero
 
 ## Usage
 
-- TODO
+```py
+from ezqueue import ezqueue
+
+queue = ezqueue(3)
+   
+for i in range(2):
+    queue.put(i, { "msg": "Hello world" })
+
+for i in range(1):
+    queue.put(i, { "msg": "Hello world!" })
+
+print(queue.getQueue())
+```
 
 ## Documentation
 
